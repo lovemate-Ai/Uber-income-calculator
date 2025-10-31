@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uber Income Auto Calculator (Voice)</title>
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #001f3f, #0074D9);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  h2 {
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 5px #000;
+  }
+  .box {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  button {
+    background: #00c853;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #00e676;
+  }
+  .result {
+    margin-top: 15px;
+    font-size: 18px;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+  <h2>🚗 Uber Income Auto Calculator 🔊</h2>
+  <div class="box">
+    <label>উবার কমিশন (টাকায়):</label><br>
+    <input type="number" id="commission" placeholder="যেমন: 421"><br>
+    <label>কমিশন হার (%):</label><br>
+    <input type="number" id="rate" placeholder="যেমন: 25"><br>
+    <button onclick="calculateIncome()">হিসাব দেখুন</button>
+    <div class="result" id="result"></div>
+  </div>
+
+<script>
+function calculateIncome() {
+  let commission = parseFloat(document.getElementById('commission').value);
+  let rate = parseFloat(document.getElementById('rate').value);
+  
+  if (isNaN(commission) || isNaN(rate) || rate <= 0) {
+    document.getElementById('result').innerHTML = "⚠️ অনুগ্রহ করে সঠিক সংখ্যা দিন!";
+    speakText("অনুগ্রহ করে সঠিক সংখ্যা দিন");
+    return;
+  }
+
+  let totalFare = commission / (rate / 100);
+  let driverIncome = totalFare - commission;
+
+  let message = `মোট ভাড়া ${totalFare.toFixed(0)} টাকা এবং আপনার হাতে পাওয়া ইনকাম ${driverIncome.toFixed(0)} টাকা`;
+
+  document.getElementById('result').innerHTML = `
+    💰 মোট ভাড়া: ৳${totalFare.toFixed(2)}<br>
+    🧍 হাতে পাওয়া ইনকাম: ৳${driverIncome.toFixed(2)}
+  `;
+
+  // বাংলা ভয়েসে বলবে
+  speakText(message);
+}
+
+function speakText(text) {
+  let utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "bn-BD"; // বাংলা ভাষা
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+}
+</script>
+</body>
+</html>
