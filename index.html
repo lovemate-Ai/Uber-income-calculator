@@ -3,104 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uber Income Auto Calculator (Voice)</title>
+<title>Fuel / Gas Cost Trip Calculator</title>
 <style>
-  body {
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #001f3f, #0074D9);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+  body{
+    background:linear-gradient(135deg,#283E51,#485563);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
   }
-  h2 {
-    margin-bottom: 20px;
-    text-shadow: 1px 1px 5px #000;
+  .box{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    padding:25px 30px;
+    border-radius:20px;
+    width:95%;
+    max-width:400px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.4);
+    animation:fadeIn 0.8s ease;
   }
-  .box {
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
   }
-  input {
-    width: 90%;
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
+  h2{
+    text-align:center;
+    font-size:1.7rem;
+    margin-bottom:15px;
+    color:#00ff99;
   }
-  button {
-    background: #00c853;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.3s;
+  label{display:block;margin-top:12px;font-weight:600;}
+  input{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    margin-top:5px;
+    background:rgba(255,255,255,0.2);
+    color:#fff;
+    font-size:16px;
+    outline:none;
   }
-  button:hover {
-    background: #00e676;
+  input::placeholder{color:#ccc;}
+  button{
+    width:100%;
+    background:#00c853;
+    color:#fff;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    font-size:16px;
+    margin-top:20px;
+    cursor:pointer;
+    transition:0.3s;
   }
-  .result {
-    margin-top: 15px;
-    font-size: 18px;
-    background: rgba(0,0,0,0.2);
-    padding: 10px;
-    border-radius: 10px;
+  button:hover{background:#009624;transform:scale(1.03);}
+  .result{
+    margin-top:20px;
+    background:rgba(0,0,0,0.3);
+    padding:15px;
+    border-radius:12px;
+    animation:pop 0.4s ease;
   }
+  @keyframes pop{
+    from{transform:scale(0.8);opacity:0;}
+    to{transform:scale(1);opacity:1;}
+  }
+  .credit{text-align:center;margin-top:15px;font-size:13px;color:#aaa;}
 </style>
 </head>
 <body>
-  <h2>🚗 Uber Income Auto Calculator 🔊</h2>
   <div class="box">
-    <label>উবার কমিশন (টাকায়):</label><br>
-    <input type="number" id="commission" placeholder="যেমন: 421"><br>
-    <label>কমিশন হার (%):</label><br>
-    <input type="number" id="rate" placeholder="যেমন: 25"><br>
-    <button onclick="calculateIncome()">হিসাব দেখুন</button>
+    <h2>⛽ Fuel / Gas Cost Trip Calculator</h2>
+    
+    <label>মোট দূরত্ব (কিমি):</label>
+    <input type="number" id="distance" placeholder="যেমন: 350">
+    
+    <label>গাড়ির মাইলেজ (কিমি প্রতি লিটার):</label>
+    <input type="number" id="mileage" placeholder="যেমন: 12">
+    
+    <label>প্রতি লিটার ফুয়েল/গ্যাসের দাম (৳):</label>
+    <input type="number" id="fuelPrice" placeholder="যেমন: 130">
+    
+    <label>অতিরিক্ত খরচ (যেমন টোল, পার্কিং ইত্যাদি):</label>
+    <input type="number" id="extraCost" placeholder="যেমন: 150">
+    
+    <button onclick="calcTrip()">ফলাফল দেখাও</button>
+    
     <div class="result" id="result"></div>
+    <div class="credit">🚘 তৈরি করেছেন — Sobuj AI Tools</div>
   </div>
 
 <script>
-function calculateIncome() {
-  let commission = parseFloat(document.getElementById('commission').value);
-  let rate = parseFloat(document.getElementById('rate').value);
-  
-  if (isNaN(commission) || isNaN(rate) || rate <= 0) {
-    document.getElementById('result').innerHTML = "⚠️ অনুগ্রহ করে সঠিক সংখ্যা দিন!";
-    speakText("অনুগ্রহ করে সঠিক সংখ্যা দিন");
+function calcTrip(){
+  const distance = parseFloat(document.getElementById("distance").value) || 0;
+  const mileage = parseFloat(document.getElementById("mileage").value) || 0;
+  const fuelPrice = parseFloat(document.getElementById("fuelPrice").value) || 0;
+  const extra = parseFloat(document.getElementById("extraCost").value) || 0;
+
+  if(distance <=0 || mileage <=0 || fuelPrice <=0){
+    document.getElementById("result").innerHTML = "<b>⚠️ দয়া করে সব ইনপুট সঠিকভাবে দিন!</b>";
     return;
   }
 
-  let totalFare = commission / (rate / 100);
-  let driverIncome = totalFare - commission;
+  const fuelNeeded = distance / mileage;
+  const totalFuelCost = fuelNeeded * fuelPrice;
+  const totalTripCost = totalFuelCost + extra;
+  const perKmCost = totalTripCost / distance;
 
-  let message = `মোট ভাড়া ${totalFare.toFixed(0)} টাকা এবং আপনার হাতে পাওয়া ইনকাম ${driverIncome.toFixed(0)} টাকা`;
-
-  document.getElementById('result').innerHTML = `
-    💰 মোট ভাড়া: ৳${totalFare.toFixed(2)}<br>
-    🧍 হাতে পাওয়া ইনকাম: ৳${driverIncome.toFixed(2)}
+  let msg = `
+    <strong>📊 ট্রিপ বিশ্লেষণ:</strong><br>
+    🛣️ মোট দূরত্ব: ${distance.toFixed(1)} কিমি<br>
+    ⛽ প্রয়োজনীয় ফুয়েল: ${fuelNeeded.toFixed(2)} লিটার<br>
+    💰 ফুয়েল খরচ: ৳${totalFuelCost.toFixed(2)}<br>
+    🧾 অতিরিক্ত খরচ: ৳${extra.toFixed(2)}<br><br>
+    ✅ <strong>মোট ট্রিপ খরচ: ৳${totalTripCost.toFixed(2)}</strong><br>
+    🚗 প্রতি কিমিতে খরচ: ৳${perKmCost.toFixed(2)}
   `;
+  
+  const resBox = document.getElementById("result");
+  resBox.innerHTML = msg;
 
-  // বাংলা ভয়েসে বলবে
-  speakText(message);
+  // ভয়েস রেজাল্ট ঘোষণা
+  const speakText = `তোমার মোট দূরত্ব ${distance} কিলোমিটার। মোট ট্রিপ খরচ প্রায় ${totalTripCost.toFixed(0)} টাকা। প্রতি কিলোমিটারে খরচ ${perKmCost.toFixed(2)} টাকা।`;
+  speakBangla(speakText);
 }
 
-function speakText(text) {
-  let utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "bn-BD"; // বাংলা ভাষা
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  window.speechSynthesis.speak(utterance);
+function speakBangla(text){
+  if('speechSynthesis' in window){
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'bn-BD';
+    u.rate = 1;
+    window.speechSynthesis.speak(u);
+  }
 }
 </script>
 </body>
